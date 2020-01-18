@@ -13,15 +13,18 @@ usage: find.py [-h] --mode [find/delete/dryrun]
                [--include [str [str ...]]] [--miniHashSize bytes]
                [--incvms [INCVMS]] [--media [INCMEDIA]]
 
+
 Check for duplicates and delete them.
+
 
 optional arguments:
   -h, --help            show this help message and exit
+  
   --mode [find/delete/dryrun]
-                        [find] Find duplicates. [delete] delete duplicates.
-                        [dryrun] Run delete without actually deleting.
+            [find] Find duplicates. [delete] delete duplicates.
+            [dryrun] Run delete without actually deleting.
   --target [target [target ...]]
-                        destinations(s) to check for duplicates.
+                          destinations(s) to check for duplicates.
   --exclude [str [str ...]]
                         Strings in the filename or path to exlcude from
                         duplicate list. Any in the list will result in
@@ -36,9 +39,7 @@ optional arguments:
   --incvms [INCVMS]     Setting [True] allows deletion of detected Virtual
                         Machine files which may have valid duplicates.
   --media [INCMEDIA]    Setting adds common media file extensions to the
-                        include list. Extensions used are: .mp4 .mkv .avi .wma
-                        .3gp .flv .m4p .mpeg .mpg .m4v .swf .mov .h264 .h265
-                        .3g2 .rm .vob .mp3 .wav .ogg .3ga .4md .668 .669 .6cm
+                        include list. Extensions used are: .mp4 .mkv .avi .wma .3gp .flv .m4p .mpeg .mpg .m4v .swf .mov .h264 .h265 .3g2 .rm .vob .mp3 .wav .ogg .3ga .4md .668 .669 .6cm
                         .8cm .abc .amf .ams .wpl .cda .mid .midi .mpa .wma
                         .jpg .jpeg .bmp .mpo .gif .png .tiff .tif .psd .svg
                         .ai .ico .ps .pdf .doc .docx .xls .xlsx .ppt .pptx
