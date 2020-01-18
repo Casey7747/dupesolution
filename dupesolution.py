@@ -81,6 +81,8 @@ def checkHashExists(full_hash):
 vmPathList = list()
 def check_not_in_exclude(dirpath, filename):
 	full_path = os.path.join(dirpath, filename).lower()
+	directory = dirpath.lower()
+	fname = filename.lower()
 	if(args.exclude):
 		for excludeString in args.exclude:
 			if not (full_path.find(excludeString.lower()) == -1):
@@ -88,7 +90,7 @@ def check_not_in_exclude(dirpath, filename):
 				logging.info ("Excluding due to \"'%s'\" being found in '%s'"% (excludeString,full_path))
 				return False
 	for excludePath in vmPathList:
-		if not (dirpath.find(excludePath.lower()) == -1):
+		if not (directory.find(excludePath.lower()) == -1):
 			#logging.info ("Excluding due to \"", excludePath, "\" path found in ", full_path)
 			logging.info ("Excluding due to \"'%s'\" being found in '%s'"% (excludePath,full_path))
 			return False
