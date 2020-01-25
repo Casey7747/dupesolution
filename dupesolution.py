@@ -12,6 +12,7 @@ import time
 import uuid
 start_time = time.time()
 
+#File extension lists
 video = [".mp4", ".mkv", ".avi", ".wma", ".3gp", ".flv", ".m4p", ".mpeg",
 	".mpg", ".m4v", ".swf", ".mov", ".h264", ".h265", ".3g2", ".rm", ".vob"]
 audio = [".mp3", ".wav", ".ogg", ".3ga", ".4md", ".668", ".669", ".6cm",
@@ -23,9 +24,14 @@ documents = [".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".txt",
 	".rtf", ".tex"]
 executables = [".exe"  ".bat", ".apk", ".bin", ".cgi", ".pl", ".com", ".jar", ".py", ".wsf"]
 compressed = [".zip", ".7z", ".ace", ".rar", ".deb", ".pkg", ".rpm", ".tar", ".z"]
+coding = [".c", ".cpp", ".h", ".py", ".sh", ".js", ".jar"]
+system = [".sys", ".ini", ".inf", ".cfg", ".dat", ".cab"]
+cad = [".dwg", ".dxf", ".dwt", ".stl", ".gcode"]
 other = [".iso", ".csv", ".log", ".dmg", ".vcd"]
 vmFileList = [".vmdk",".vmx",".vmsd",".vmxf",".appinfo",".nvram",".vmem",".vmss"]
+#Combined Lists
 media = video + audio + images + documents
+allknown = media + executables + compressed + other + coding + system + cad
 
 class pgmVars:
 	volume = 0
@@ -123,6 +129,10 @@ def check_in_include(dirpath, filename):
 		for includeString in media:
 			if not (filename.find(includeString.lower()) == -1):
 					return True
+	elif (args.incAll):
+		for includeString in allknown:
+			if not (filename.find(includeString.lower()) == -1):
+					return True
 	else:
 		return True
 	return False
@@ -168,6 +178,7 @@ def check_for_duplicate_mini(paths, hash=hashlib.sha1):
 	#printProgressBar(0, progTotal, prefix = 'Progress:', suffix = 'Complete', length = 50)
 	for __, files in pgmVars.hashes_by_size.items():
 		prog += 1
+		printProgressBar(prog, progTotal, prefix = 'Progress:', suffix = 'Complete', length = 90)	
 		if len(files) < 2:
 			continue	# this file size is unique, no need to spend cpy cycles on it
 		for filename in files:
@@ -185,7 +196,6 @@ def check_for_duplicate_mini(paths, hash=hashlib.sha1):
 				pgmVars.hashes_on_1k[small_hash] = []		  # create the list for this 1k hash
 				pgmVars.hashes_on_1k[small_hash].append(filename)
 			searchedMiniHashCount += 1
-			printProgressBar(prog, progTotal, prefix = 'Progress:', suffix = 'Complete', length = 50)	
 	print("Searched",searchedMiniHashCount, "files.")
 	print("Found",len(pgmVars.hashes_on_1k) ,"unique files with possible duplicates.")
 	print("=========================================================================")
@@ -198,9 +208,9 @@ def check_for_duplicate_full(paths, hash=hashlib.sha1):
 	progTotal = len(pgmVars.hashes_on_1k.items())
 	# For all files with the hash on the 1st 1024 bytes, get their hash on the full file - collisions will be duplicates
 	print ("Checking for duplicate full hash")
-	printProgressBar(prog, progTotal, prefix = 'Progress:', suffix = 'Complete', length = 50)
 	for __, files in pgmVars.hashes_on_1k.items():
 		prog += 1
+		printProgressBar(prog, progTotal, prefix = 'Progress:', suffix = 'Complete', length = 90)
 		if len(files) < 2:
 			continue	# this hash of fist 1k file bytes is unique, no need to spend cpy cycles on it
 		for filename in files:
@@ -237,7 +247,6 @@ def check_for_duplicate_full(paths, hash=hashlib.sha1):
 			else:
 				pgmVars.hashes_full[full_hash] = filename
 			searchedHashCount += 1
-		printProgressBar(prog, progTotal, prefix = 'Progress:', suffix = 'Complete', length = 50)
 	print("Searched",searchedHashCount, "files.")
 	print("Found",dupeHashCount ,"duplicate files(total).")
 	print("Found",duplicateFileCount ,"duplicates viable for deletion.")
@@ -461,10 +470,15 @@ parser.add_argument('--media', dest='incMedia', default=False, const=True, nargs
 					Extensions used are: .mp4 .mkv .avi .wma .3gp .flv .m4p .mpeg .mpg .m4v .swf .mov .h264 .h265 .3g2 .rm .vob .mp3 .wav .ogg
 					.3ga .4md .668 .669 .6cm .8cm .abc .amf .ams .wpl .cda .mid .midi .mpa .wma .jpg .jpeg .bmp .mpo .gif .png .tiff .tif .psd
 					.svg .ai .ico .ps .pdf .doc .docx .xls .xlsx .ppt .pptx .txt .pps .ods .xlr .odt .wps .wks .wpd .key .odp .rtf .tex""")
+parser.add_argument('--allknown', dest='incAll', default=False, const=True, nargs='?',
+					required=False, help="""Setting adds common media file extensions to the include list.
+					Extensions used are those in media and the following: """)
+
 print("UUID:")
 print (uuid.UUID(int=uuid.getnode()))
 args = parser.parse_args()
 logging.basicConfig(filename='find.log',level=logging.DEBUG)
+logging.info("=========================New Set=========================")
 
 if (args.stage):
 	if((args.mode[0].lower() == "find") & (args.stage[0] > 0 & args.stage[0] <5)):
@@ -473,7 +487,6 @@ if (args.stage):
 		staged_find(args.stage[0], args.target)
 	else:
 		goodbye()
-
 elif (args.mode[0].lower() == "find"):
 	targetList = args.target
 	print ("Find Mode")
